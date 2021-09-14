@@ -30,6 +30,8 @@ import org.apache.hadoop.classification.InterfaceAudience.Public;
 import org.apache.hadoop.classification.InterfaceStability.Evolving;
 
 /**
+ * 根据不同的OPERAND生产出不同的StateMachine
+ *
  * State machine topology.
  * This object is semantically immutable.  If you have a
  * StateMachineFactory there's no operation in the API that changes
@@ -49,6 +51,9 @@ final public class StateMachineFactory
 
   private final TransitionsListNode transitionsListNode;
 
+  /**
+   * key：前一状态，value：Map(事件类型：转换动作)
+   */
   private Map<STATE, Map<EVENTTYPE,
     Transition<OPERAND, STATE, EVENTTYPE, EVENT>>> stateMachineTable;
 
@@ -282,9 +287,9 @@ final public class StateMachineFactory
 
   /**
    * Effect a transition due to the effecting stimulus.
-   * @param state current state
+   * @param oldState current state
    * @param eventType trigger to initiate the transition
-   * @param cause causal eventType context
+   * @param
    * @return transitioned state
    */
   private STATE doTransition
@@ -347,6 +352,9 @@ final public class StateMachineFactory
                     implements Transition<OPERAND, STATE, EVENTTYPE, EVENT> {
 
     private STATE postState;
+    /**
+     * hook是最后具体做事的
+     */
     private SingleArcTransition<OPERAND, EVENT> hook; // transition hook
 
     SingleInternalArc(STATE postState,
@@ -358,9 +366,11 @@ final public class StateMachineFactory
     @Override
     public STATE doTransition(OPERAND operand, STATE oldState,
                               EVENT event, EVENTTYPE eventType) {
+//    若hook存在，则调用hook做逻辑处理
       if (hook != null) {
         hook.transition(operand, event);
       }
+//    做完后，返回转换后的状态
       return postState;
     }
   }
@@ -409,7 +419,8 @@ final public class StateMachineFactory
     return new InternalStateMachine(operand, initialState);
   }
 
-  /* 
+  /**
+   * 注意入参，这里StateMachine是根据入参不同而不同
    * @return a {@link StateMachine} that starts in the default initial
    *          state and whose {@link Transition} s are applied to
    *          {@code operand} . 

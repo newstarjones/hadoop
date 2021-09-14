@@ -370,6 +370,7 @@ public class RMAppImpl implements RMApp, Recoverable {
     this.name = name;
     this.rmContext = rmContext;
     this.dispatcher = rmContext.getDispatcher();
+    // 这个handler的类型是 SchedulerEventDispatcher
     this.handler = dispatcher.getEventHandler();
     this.conf = config;
     this.user = user;
@@ -711,6 +712,7 @@ public class RMAppImpl implements RMApp, Recoverable {
         /* TODO fail the application on the failed transition */
       }
 
+//    要是doTransition前后，事件主体的状态发生改变，记录日志
       if (oldState != getState()) {
         LOG.info(appID + " State change from " + oldState + " to "
             + getState());

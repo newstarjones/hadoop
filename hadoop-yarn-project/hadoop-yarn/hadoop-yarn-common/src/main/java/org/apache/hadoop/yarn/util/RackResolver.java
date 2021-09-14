@@ -82,6 +82,8 @@ public class RackResolver {
   }
 
   /**
+   * 根据节点名获取 机架位置信息
+   *
    * Utility method for getting a hostname resolved to a node in the
    * network topology. This method doesn't initialize the class.
    * Call {@link #init(Configuration)} explicitly.

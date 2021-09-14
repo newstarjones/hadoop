@@ -46,6 +46,9 @@ import com.google.protobuf.ServiceException;
 @Private
 public class ApplicationMasterProtocolPBServiceImpl implements ApplicationMasterProtocolPB {
 
+  /**
+   * 注意到 这里的real 是 ApplicationMasterService，具体方法的业务逻辑都在这里被实现
+   */
   private ApplicationMasterProtocol real;
   
   public ApplicationMasterProtocolPBServiceImpl(ApplicationMasterProtocol impl) {

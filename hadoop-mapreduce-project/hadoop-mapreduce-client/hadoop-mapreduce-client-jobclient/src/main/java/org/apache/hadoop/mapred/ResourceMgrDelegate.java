@@ -79,6 +79,9 @@ public class ResourceMgrDelegate extends YarnClient {
   private YarnConfiguration conf;
   private ApplicationSubmissionContext application;
   private ApplicationId applicationId;
+  /**
+   * 这个client实际是 YarnClientImpl
+   */
   @Private
   @VisibleForTesting
   protected YarnClient client;

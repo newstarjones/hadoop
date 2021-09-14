@@ -75,11 +75,15 @@ public class RpcServerFactoryPBImpl implements RpcServerFactory {
       InetSocketAddress addr, Configuration conf,
       SecretManager<? extends TokenIdentifier> secretManager, int numHandlers,
       String portRangeConfig) {
-    
+    // 例如 这里的 instance = ApplicationMasterService，表示实现了具体业务逻辑的那个实现
+    // protocol = org.apache.hadoop.yarn.api.ApplicationMasterProtocol
+    // constructor = org.apache.hadoop.yarn.api.impl.pb.service.ApplicationMasterProtocolPBServiceImpl
+
     Constructor<?> constructor = serviceCache.get(protocol);
     if (constructor == null) {
       Class<?> pbServiceImplClazz = null;
       try {
+//      得到的形式如：pbServiceImplClazz = org.apache.hadoop.yarn.api.impl.pb.service.ApplicationMasterProtocolPBServiceImpl
         pbServiceImplClazz = localConf
             .getClassByName(getPbServiceImplClassName(protocol));
       } catch (ClassNotFoundException e) {
@@ -108,11 +112,13 @@ public class RpcServerFactoryPBImpl implements RpcServerFactory {
       throw new YarnRuntimeException(e);
     }
 
+    // pbProtocal = org.apache.hadoop.yarn.api.ApplicationMasterProtocolPB  pb形式的Protocol
     Class<?> pbProtocol = service.getClass().getInterfaces()[0];
     Method method = protoCache.get(protocol);
     if (method == null) {
       Class<?> protoClazz = null;
       try {
+        // protoClazz = org.apache.hadoop.yarn.proto.ApplicationMasterProtocol$ApplicationMasterProtocolService
         protoClazz = localConf.getClassByName(getProtoClassName(protocol));
       } catch (ClassNotFoundException e) {
         throw new YarnRuntimeException("Failed to load class: ["
@@ -139,12 +145,25 @@ public class RpcServerFactoryPBImpl implements RpcServerFactory {
       throw new YarnRuntimeException(e);
     }
   }
-  
+
+  /**
+   * 输入：org.apache.hadoop.yarn.api.ApplicationMasterProtocol
+   * 输出：org.apache.hadoop.yarn.proto.ApplicationMasterProtocol$ApplicationMasterProtocolService
+   * @param clazz
+   * @return
+   */
   private String getProtoClassName(Class<?> clazz) {
     String srcClassName = getClassName(clazz);
     return PROTO_GEN_PACKAGE_NAME + "." + srcClassName + "$" + srcClassName + PROTO_GEN_CLASS_SUFFIX;  
   }
-  
+
+  /**
+   * 比如：
+   * 输入 org.apache.hadoop.yarn.api.ApplicationMasterProtocol
+   * 输出 org.apache.hadoop.yarn.api.impl.pb.service.ApplicationMasterProtocolPBServiceImpl
+   * @param clazz
+   * @return
+   */
   private String getPbServiceImplClassName(Class<?> clazz) {
     String srcPackagePart = getPackageName(clazz);
     String srcClassName = getClassName(clazz);

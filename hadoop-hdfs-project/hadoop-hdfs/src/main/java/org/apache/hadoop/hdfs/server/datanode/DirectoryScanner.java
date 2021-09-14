@@ -57,6 +57,9 @@ import org.apache.hadoop.util.Time;
 public class DirectoryScanner implements Runnable {
   private static final Log LOG = LogFactory.getLog(DirectoryScanner.class);
 
+  /**
+   * 实际就是 FsDatasetImpl
+   */
   private final FsDatasetSpi<?> dataset;
   private final ExecutorService reportCompileThreadPool;
   private final ScheduledExecutorService masterThread;
@@ -64,6 +67,9 @@ public class DirectoryScanner implements Runnable {
   private volatile boolean shouldRun = false;
   private boolean retainDiffs = false;
 
+  /**
+   * 对 HashMap< String, LinkedList< ScanInfo> > 的扩充
+   */
   final ScanInfoPerBlockPool diffs = new ScanInfoPerBlockPool();
   final Map<String, Stats> stats = new HashMap<String, Stats>();
   

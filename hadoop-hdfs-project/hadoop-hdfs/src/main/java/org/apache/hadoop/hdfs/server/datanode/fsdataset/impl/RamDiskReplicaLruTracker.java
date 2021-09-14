@@ -66,6 +66,7 @@ public class RamDiskReplicaLruTracker extends RamDiskReplicaTracker {
 
   /**
    * Map of persisted replicas ordered by their last use times.
+   * RAM_DISK上的replica拷贝完成后转入到该队列。这是已经持久存储，可以从RAM_DISK上删除的replica
    */
   TreeMultimap<Long, RamDiskReplicaLru> replicasPersisted;
 

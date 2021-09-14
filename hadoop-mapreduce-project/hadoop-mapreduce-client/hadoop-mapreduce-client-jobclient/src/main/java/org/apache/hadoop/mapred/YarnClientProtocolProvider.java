@@ -36,6 +36,14 @@ public class YarnClientProtocolProvider extends ClientProtocolProvider {
     return null;
   }
 
+  /**
+   * 注意到addr参数是没有真正起作用的
+   *
+   * @param addr
+   * @param conf
+   * @return
+   * @throws IOException
+   */
   @Override
   public ClientProtocol create(InetSocketAddress addr, Configuration conf)
       throws IOException {

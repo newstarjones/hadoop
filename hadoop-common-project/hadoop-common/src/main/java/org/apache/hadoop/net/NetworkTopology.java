@@ -107,7 +107,8 @@ public class NetworkTopology {
       return children.size();
     }
         
-    /** Judge if this node represents a rack 
+    /** Judge if this node represents a rack
+     * 机架下面肯定是机器，机架下面不能再有机架
      * @return true if it has no child or its children are not InnerNodes
      */ 
     boolean isRack() {
@@ -124,7 +125,7 @@ public class NetworkTopology {
     }
         
     /** Judge if this node is an ancestor of node <i>n</i>
-     * 
+     *  判断当前InnerNode节点是否是 节点n的祖先
      * @param n a node
      * @return true if this node is an ancestor of <i>n</i>
      */
@@ -135,7 +136,7 @@ public class NetworkTopology {
     }
         
     /** Judge if this node is the parent of node <i>n</i>
-     * 
+     *  判断当前InnerNode节点是否是 节点n的父亲
      * @param n a node
      * @return true if this node is the parent of <i>n</i>
      */
@@ -372,12 +373,12 @@ public class NetworkTopology {
   } // end of InnerNode
 
   /**
-   * the root cluster map
+   * the root cluster map 整个集群拓扑图
    */
   InnerNode clusterMap;
   /** Depth of all leaf nodes */
   private int depthOfAllLeaves = -1;
-  /** rack counter */
+  /** rack counter 集群中总共的机架数 */
   protected int numOfRacks = 0;
 
   /**
@@ -468,6 +469,7 @@ public class NetworkTopology {
   }
   
   /**
+   * 获取指定机架上的所有机器节点
    * Given a string representation of a rack, return its children
    * @param loc a path-like string representation of a rack
    * @return a newly allocated list with all the node's children
@@ -578,7 +580,10 @@ public class NetworkTopology {
     return loc;
   }
   
-  /** @return the total number of racks */
+  /**
+   * 集群中有多少机架
+   * @return the total number of racks
+   */
   public int getNumOfRacks() {
     netlock.readLock().lock();
     try {
@@ -588,7 +593,10 @@ public class NetworkTopology {
     }
   }
 
-  /** @return the total number of leaf nodes */
+  /**
+   * 集群中有多少叶节点
+   * @return the total number of leaf nodes
+   */
   public int getNumOfLeaves() {
     netlock.readLock().lock();
     try {

@@ -284,6 +284,9 @@ public class DataNode extends ReconfigurableBase
   volatile boolean shutdownForUpgrade = false;
   private boolean shutdownInProgress = false;
   private BlockPoolManager blockPoolManager;
+  /**
+   * 核心数据结构。代表数据块的集合
+   */
   volatile FsDatasetSpi<? extends FsVolumeSpi> data = null;
   private String clusterId = null;
 

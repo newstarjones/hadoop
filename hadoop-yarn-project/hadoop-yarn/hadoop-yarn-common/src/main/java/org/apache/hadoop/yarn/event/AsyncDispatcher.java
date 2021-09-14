@@ -202,6 +202,7 @@ public class AsyncDispatcher extends AbstractService implements Dispatcher {
   @Override
   public void register(Class<? extends Enum> eventType,
       EventHandler handler) {
+    // 从后面代码可以看出 eventDispatchers里只有两类Handler，即组合性质的MultiListenerHandler和单独性质的EventHandler
     /* check to see if we have a listener registered */
     EventHandler<Event> registeredHandler = (EventHandler<Event>)
     eventDispatchers.get(eventType);
@@ -271,7 +272,7 @@ public class AsyncDispatcher extends AbstractService implements Dispatcher {
   /**
    * Multiplexing an event. Sending it to different handlers that
    * are interested in the event.
-   * @param <T> the type of event these multiple handlers are interested in.
+   * <Event> the type of event these multiple handlers are interested in.
    */
   static class MultiListenerHandler implements EventHandler<Event> {
     List<EventHandler<Event>> listofHandlers;

@@ -241,7 +241,7 @@ public class JobImpl implements org.apache.hadoop.mapreduce.v2.app.job.Job,
       new UpdatedNodesTransition();
 
   protected static final
-    StateMachineFactory<JobImpl, JobStateInternal, JobEventType, JobEvent> 
+    StateMachineFactory<JobImpl, JobStateInternal, JobEventType, JobEvent>
        stateMachineFactory
      = new StateMachineFactory<JobImpl, JobStateInternal, JobEventType, JobEvent>
               (JobStateInternal.NEW)
@@ -652,6 +652,9 @@ public class JobImpl implements org.apache.hadoop.mapreduce.v2.app.job.Job,
   private ScheduledThreadPoolExecutor executor;
   private ScheduledFuture failWaitTriggerScheduledFuture;
 
+  /**
+   * 上次非终态状态，即JobState.SUCCEEDED JobState.FAILED JobState.KILLED JobState.ERROR之外的状态
+   */
   private JobState lastNonFinalState = JobState.NEW;
 
   public JobImpl(JobId jobId, ApplicationAttemptId applicationAttemptId,

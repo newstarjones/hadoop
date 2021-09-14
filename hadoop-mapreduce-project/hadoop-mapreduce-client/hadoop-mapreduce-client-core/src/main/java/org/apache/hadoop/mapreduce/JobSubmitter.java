@@ -75,7 +75,13 @@ class JobSubmitter {
   protected static final Log LOG = LogFactory.getLog(JobSubmitter.class);
   private static final String SHUFFLE_KEYGEN_ALGORITHM = "HmacSHA1";
   private static final int SHUFFLE_KEY_LENGTH = 64;
+  /**
+   * job需要与文件系统打交道，所以定义这个。jt即 jobTracker的缩写
+   */
   private FileSystem jtFs;
+  /**
+   * 提交job的主负责人
+   */
   private ClientProtocol submitClient;
   private String submitHostName;
   private String submitHostAddress;
@@ -142,6 +148,7 @@ class JobSubmitter {
     Configuration conf = job.getConfiguration();
     addMRFrameworkToDistributedCache(conf);
 
+//    作业提交的目录，所谓舞台目录
     Path jobStagingArea = JobSubmissionFiles.getStagingDir(cluster, conf);
     //configure the command line options correctly on the submitting dfs
     InetAddress ip = InetAddress.getLocalHost();
@@ -153,6 +160,7 @@ class JobSubmitter {
     }
     JobID jobId = submitClient.getNewJobID();
     job.setJobID(jobId);
+//    具体job相关的各种信息，将放到`舞台目录/jobId`这个文件夹下
     Path submitJobDir = new Path(jobStagingArea, jobId.toString());
     JobStatus status = null;
     try {
@@ -163,6 +171,7 @@ class JobSubmitter {
       conf.set(MRJobConfig.MAPREDUCE_JOB_DIR, submitJobDir.toString());
       LOG.debug("Configuring job " + jobId + " with " + submitJobDir 
           + " as the submit dir");
+
       // get delegation token for the dir
       TokenCache.obtainTokensForNamenodes(job.getCredentials(),
           new Path[] { submitJobDir }, conf);
@@ -188,12 +197,14 @@ class JobSubmitter {
             job.getCredentials());
       }
 
+//      将可执行文件之类拷贝到HDFS中
       copyAndConfigureFiles(job, submitJobDir);
 
       Path submitJobFile = JobSubmissionFiles.getJobConfPath(submitJobDir);
       
       // Create the splits for the job
       LOG.debug("Creating splits at " + jtFs.makeQualified(submitJobDir));
+//      分片，返回的分片数就是 map的数量
       int maps = writeSplits(job, submitJobDir);
       conf.setInt(MRJobConfig.NUM_MAPS, maps);
       LOG.info("number of splits:" + maps);
@@ -232,6 +243,7 @@ class JobSubmitter {
       }
 
       // Write job file to submit dir
+      // 将conf的内容写入一个job.xml的文件
       writeConf(conf, submitJobFile);
       
       //
@@ -242,15 +254,14 @@ class JobSubmitter {
           jobId, submitJobDir.toString(), job.getCredentials());
       if (status != null) {
         return status;
-      } else {
+      } else { //提交异常(失败)
         throw new IOException("Could not launch job");
       }
     } finally {
-      if (status == null) {
+      if (status == null) { //若提交异常(失败)，进行善后
         LOG.info("Cleaning up the staging area " + submitJobDir);
         if (jtFs != null && submitJobDir != null)
           jtFs.delete(submitJobDir, true);
-
       }
     }
   }

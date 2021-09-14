@@ -216,7 +216,13 @@ class FsDatasetImpl implements FsDatasetSpi<FsVolumeImpl> {
   }
     
   final DataNode datanode;
+  /**
+   * 代表实际存储
+   */
   final DataStorage dataStorage;
+  /**
+   * 数据块可能属于不同的文件卷
+   */
   final FsVolumeList volumes;
   final Map<String, DatanodeStorage> storageMap;
   final FsDatasetAsyncDiskService asyncDiskService;
@@ -2557,6 +2563,7 @@ class FsDatasetImpl implements FsDatasetSpi<FsVolumeImpl> {
             // it could be checkpointed or it is already on persistent storage.
             // This can occur if a second replica on persistent storage was found
             // after the lazy write was scheduled.
+//            确认这个replica在过渡性存储介质RAM_DISK上
             if (replicaInfo != null &&
                 replicaInfo.getVolume().isTransientStorage()) {
               // Pick a target volume to persist the block.

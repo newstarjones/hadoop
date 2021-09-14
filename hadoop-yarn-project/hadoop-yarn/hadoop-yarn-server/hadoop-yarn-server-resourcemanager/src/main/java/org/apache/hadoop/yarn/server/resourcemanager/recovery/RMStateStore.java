@@ -137,6 +137,8 @@ public abstract class RMStateStore extends AbstractService {
           .newInstance(appState);
       LOG.info("Storing info for app: " + appId);
       try {
+//      存储完后，直接发起RMAppEvent给RMAppImpl。
+//      理解成：RMAppImpl从NEW->NEW_SAVING，触发了存储动作；存储完后，RMAppImpl从NEW_SAVING->SUBMITED又回到了RMAppImpl
         store.storeApplicationStateInternal(appId, appStateData);
         store.notifyApplication(new RMAppEvent(appId,
                RMAppEventType.APP_NEW_SAVED));

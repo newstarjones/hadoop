@@ -69,7 +69,7 @@ import com.google.protobuf.TextFormat;
 public class ProtobufRpcEngine implements RpcEngine {
   public static final Log LOG = LogFactory.getLog(ProtobufRpcEngine.class);
   
-  static { // Register the rpcRequest deserializer for WritableRpcEngine 
+  static { // Register the rpcRequest deserializer for ProtobufRpcEngine
     org.apache.hadoop.ipc.Server.registerProtocolEngine(
         RPC.RpcKind.RPC_PROTOCOL_BUFFER, RpcRequestWrapper.class,
         new Server.ProtoBufRpcInvoker());
@@ -597,6 +597,7 @@ public class ProtobufRpcEngine implements RpcEngine {
         
         ProtoClassProtoImpl protocolImpl = getProtocolImpl(server, protoName,
             clientVersion);
+        // 具体形式可以 参考org.apache.hadoop.yarn.proto.ApplicationMasterProtocol.ApplicationMasterProtocolService#newReflectiveBlockingService
         BlockingService service = (BlockingService) protocolImpl.protocolImpl;
         MethodDescriptor methodDescriptor = service.getDescriptorForType()
             .findMethodByName(methodName);

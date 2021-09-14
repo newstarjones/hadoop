@@ -152,6 +152,8 @@ public class CompositeService extends AbstractService {
       }
       STATE state = service.getServiceState();
       //depending on the stop police
+      //如果stopOnlyStartedServices=false，停止状态为STATE.STARTED和STATE.INITED的服务
+      //如果stopOnlyStartedServices=true，只停止状态为STATE.STARTED的服务
       if (state == STATE.STARTED 
          || (!stopOnlyStartedServices && state == STATE.INITED)) {
         Exception ex = ServiceOperations.stopQuietly(LOG, service);
@@ -161,6 +163,7 @@ public class CompositeService extends AbstractService {
       }
     }
     //after stopping all services, rethrow the first exception raised
+    //只抛出第一个异常
     if (firstException != null) {
       throw ServiceStateException.convert(firstException);
     }

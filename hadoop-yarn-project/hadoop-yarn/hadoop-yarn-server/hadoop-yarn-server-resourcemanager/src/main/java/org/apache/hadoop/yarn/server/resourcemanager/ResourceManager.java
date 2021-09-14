@@ -135,6 +135,7 @@ public class ResourceManager extends CompositeService implements Recoverable {
    */
   @VisibleForTesting
   protected RMContextImpl rmContext;
+  // 这个一个 AsyncDispatcher
   private Dispatcher rmDispatcher;
   @VisibleForTesting
   protected AdminService adminService;
@@ -150,15 +151,19 @@ public class ResourceManager extends CompositeService implements Recoverable {
   protected RMActiveServices activeServices;
   protected RMSecretManagerService rmSecretManagerService;
 
+  //资源调度器 有三种选择
   protected ResourceScheduler scheduler;
   protected ReservationSystem reservationSystem;
   private ClientRMService clientRM;
+  //为现有的AM提供服务和管理
   protected ApplicationMasterService masterService;
   protected NMLivelinessMonitor nmLivelinessMonitor;
   protected NodesListManager nodesListManager;
+  //管理已提交而尚未完成的App
   protected RMAppManager rmAppManager;
   protected ApplicationACLsManager applicationACLsManager;
   protected QueueACLsManager queueACLsManager;
+  //提供网站服务
   private WebApp webApp;
   private AppReportFetcher fetcher = null;
   protected ResourceTrackerService resourceTracker;
@@ -253,7 +258,8 @@ public class ResourceManager extends CompositeService implements Recoverable {
     rmContext.setRMAdminService(adminService);
 
     rmContext.setYarnConfiguration(conf);
-    
+
+//  创建大量的服务，注册大量的EventHandler。 比如 RMAppEventType类对应到ApplicationEventDispatcher
     createAndInitActiveServices();
 
     webAppAddress = WebAppUtils.getWebAppBindURL(this.conf,
